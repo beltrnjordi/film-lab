@@ -1,20 +1,15 @@
-export function initWebGL(
-  canvas: HTMLCanvasElement,
-): WebGL2RenderingContext | null {
+export function initWebGL(canvas: HTMLCanvasElement): WebGL2RenderingContext {
   let gl: WebGL2RenderingContext | null = null;
 
   try {
     gl = canvas.getContext("webgl2");
   } catch (e) {
     console.error("Error initializing WebGL:", e);
-    gl = null;
+    throw new Error("Could not create a WebGL context." + e);
   }
 
   if (!gl) {
-    console.error(
-      "Error initializing WebGL: Could not create a WebGL context.",
-    );
-    return null;
+    throw new Error("Could not create a WebGL context.");
   }
 
   return gl;
@@ -24,7 +19,7 @@ export function createProgram(
   gl: WebGL2RenderingContext,
   vertexShader: WebGLShader,
   fragmentShader: WebGLShader,
-): WebGLProgram | null {
+): WebGLProgram {
   const program = gl.createProgram()!;
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
@@ -33,7 +28,7 @@ export function createProgram(
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.error("Error linking program:", gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
-    return null;
+    throw new Error("Could not link WebGL program.");
   }
 
   return program;
